@@ -1,8 +1,8 @@
 #include "calculatorview.h"
 #include "ui_calculatorview.h"
 #include <QDebug>
-#include <QMessageBox>
 #include <QTest>
+#include <QTimer>
 
 CalculatorView::CalculatorView(QWidget *parent)
     : QMainWindow(parent)
@@ -12,6 +12,7 @@ CalculatorView::CalculatorView(QWidget *parent)
     firstArgument = 0;
     secondArgument = 0;
     isSuccess = false;
+    msgBox = new QMessageBox();
 }
 
 
@@ -22,9 +23,8 @@ void CalculatorView::printResult(double result)
 
 void CalculatorView::displayError(QString message)
 {
-    QMessageBox msgBox;
-    msgBox.setText(message);
-    msgBox.exec();
+    msgBox->setText(message);
+    msgBox->exec();
 }
 
 QString CalculatorView::getFirstArgumentAsString()

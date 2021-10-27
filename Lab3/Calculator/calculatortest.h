@@ -4,6 +4,7 @@
 #include <QObject>
 #include "calculator.h"
 #include <QtTest/QTest>
+#include <QLineEdit>
 
 class CalculatorTest : public QObject
 {
@@ -16,6 +17,13 @@ private slots:
     void subtract();
     void multiply();
     void divide();
+    void testSimpleCalculate();
+    void testFloatCalculate();
+    void testErrorMessageBox();
+private:
+    int m_timeoutMessageBox = 250;
+    void clearLineEdit(QLineEdit* lineEdit);
+
 };
 
 #endif // CALCULATORTEST_H

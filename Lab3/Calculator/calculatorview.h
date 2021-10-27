@@ -6,6 +6,7 @@
 #include "icalculatorview.h"
 
 #include <QMainWindow>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class CalculatorView; }
@@ -28,23 +29,25 @@ public:
     void onDivideClicked() override;
     void onMultiplyClicked() override;
 
+
+private:
+    Calculator m_calculator;
+    double firstArgument;
+    double secondArgument;
+    double result;
+    bool isSuccess;
+    void getArguments();
+#ifdef QT_DEBUG
+public:
+#endif
+    Ui::CalculatorView *ui;
+    QMessageBox* msgBox;
+
 private slots:
     void on_plusButton_clicked();
     void on_multiplyButton_clicked();
     void on_devideButton_clicked();
     void on_minusButton_clicked();
-
-private:
-    Ui::CalculatorView *ui;
-    Calculator m_calculator;
-
-    double firstArgument;
-    double secondArgument;
-    double result;
-
-    bool isSuccess;
-
-    void getArguments();
 
 };
 #endif // CALCULATORVIEW_H

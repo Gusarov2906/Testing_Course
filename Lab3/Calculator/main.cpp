@@ -5,9 +5,11 @@
 
 int main(int argc, char *argv[])
 {
-    CalculatorTest calculatorTest;
     QApplication a(argc, argv);
+#ifdef QT_DEBUG
+    CalculatorTest calculatorTest;
     QTest::qExec(&calculatorTest, argc, argv);
+#endif
     CalculatorView w;
     w.show();
     return a.exec();

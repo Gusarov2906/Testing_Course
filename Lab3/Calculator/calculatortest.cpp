@@ -1,10 +1,14 @@
 #include "calculatortest.h"
 #include <cfloat>
+#include "calculatorview.h"
+#include "ui_calculatorview.h"
+#include "QThread"
+#include <QTimer>
 
 CalculatorTest::CalculatorTest(QObject *parent) :
     QObject(parent)
 {
-
+    m_timeoutMessageBox = 300;
 }
 
 void CalculatorTest::sum()
@@ -81,3 +85,170 @@ void CalculatorTest::divide()
     }
 }
 
+void CalculatorTest::testSimpleCalculate()
+{
+#ifdef QT_DEBUG
+    CalculatorView view;
+    view.show();
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "2");
+    QTest::mouseClick(view.ui->plusButton, Qt::LeftButton);
+    QCOMPARE(view.ui->resultLineEdit->text(), QString("3"));
+    QTest::keyClick(view.ui->firstArgumentLineEdit, Qt::Key_Backspace);
+    QTest::keyClick(view.ui->secondArgumentLineEdit, Qt::Key_Backspace);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "2");
+    QTest::mouseClick(view.ui->minusButton, Qt::LeftButton);
+    QCOMPARE(view.ui->resultLineEdit->text(), QString("-1"));
+    QTest::keyClick(view.ui->firstArgumentLineEdit, Qt::Key_Backspace);
+    QTest::keyClick(view.ui->secondArgumentLineEdit, Qt::Key_Backspace);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "2");
+    QTest::mouseClick(view.ui->devideButton, Qt::LeftButton);
+    QCOMPARE(view.ui->resultLineEdit->text(), QString("0.5"));
+    QTest::keyClick(view.ui->firstArgumentLineEdit, Qt::Key_Backspace);
+    QTest::keyClick(view.ui->secondArgumentLineEdit, Qt::Key_Backspace);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "2");
+    QTest::mouseClick(view.ui->multiplyButton, Qt::LeftButton);
+    QCOMPARE(view.ui->resultLineEdit->text(), QString("2"));
+    QTest::keyClick(view.ui->firstArgumentLineEdit, Qt::Key_Backspace);
+    QTest::keyClick(view.ui->secondArgumentLineEdit, Qt::Key_Backspace);
+#endif
+}
+
+void CalculatorTest::testErrorMessageBox()
+{
+#ifdef QT_DEBUG
+    CalculatorView view;
+    view.show();
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "sdaads");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "2");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->multiplyButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("First argument error!"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "sdaads");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->minusButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("Second argument error!"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "12e");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "5");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->plusButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("First argument error!"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "e5");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->multiplyButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("Second argument error!"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "e1");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "e5");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->devideButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("First argument error!"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, " ");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "1");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->minusButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("First argument error!"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "2");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, " ");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->plusButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("Second argument error!"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, " ");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, " ");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->plusButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("First argument error!"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "213");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "0");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->devideButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("Division by zero"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "2.32");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "0");
+    QTimer::singleShot(m_timeoutMessageBox, view.msgBox, SLOT(close()));
+    QTest::mouseClick(view.ui->devideButton, Qt::LeftButton);
+    QCOMPARE(view.msgBox->text(), QString("Division by zero"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+#endif
+}
+
+void CalculatorTest::testFloatCalculate()
+{
+#ifdef QT_DEBUG
+    CalculatorView view;
+    view.show();
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1.21");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "1.1");
+    QTest::mouseClick(view.ui->plusButton, Qt::LeftButton);
+    QCOMPARE(view.ui->resultLineEdit->text(), QString("2.31"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1.44");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "2.22");
+    QTest::mouseClick(view.ui->minusButton, Qt::LeftButton);
+    QCOMPARE(view.ui->resultLineEdit->text(), QString("-0.78"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1.2");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "1.2");
+    QTest::mouseClick(view.ui->multiplyButton, Qt::LeftButton);
+    QCOMPARE(view.ui->resultLineEdit->text(), QString("1.44"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+
+    QTest::keyClicks(view.ui->firstArgumentLineEdit, "1");
+    QTest::keyClicks(view.ui->secondArgumentLineEdit, "2");
+    QTest::mouseClick(view.ui->devideButton, Qt::LeftButton);
+    QCOMPARE(view.ui->resultLineEdit->text(), QString("0.5"));
+    clearLineEdit(view.ui->firstArgumentLineEdit);
+    clearLineEdit(view.ui->secondArgumentLineEdit);
+#endif
+}
+
+void CalculatorTest::clearLineEdit(QLineEdit *lineEdit)
+{
+    while(lineEdit->text().size() > 0)
+    {
+        QTest::keyClick(lineEdit, Qt::Key_Backspace);
+    }
+}
