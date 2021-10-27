@@ -65,6 +65,7 @@ void CalculatorView::on_minusButton_clicked()
 void CalculatorView::onPlusClicked()
 {
     getArguments();
+    ui->operatorLabel->setText("+");
     if(!isSuccess)
     {
         return;
@@ -76,6 +77,7 @@ void CalculatorView::onPlusClicked()
 void CalculatorView::onMinusClicked()
 {
     getArguments();
+    ui->operatorLabel->setText("-");
     if(!isSuccess)
     {
         return;
@@ -87,6 +89,7 @@ void CalculatorView::onMinusClicked()
 void CalculatorView::onDivideClicked()
 {
     getArguments();
+    ui->operatorLabel->setText("/");
     if(!isSuccess)
     {
         return;
@@ -100,13 +103,13 @@ void CalculatorView::onDivideClicked()
         displayError(e);
         return;
     }
-
     printResult(result);
 }
 
 void CalculatorView::onMultiplyClicked()
 {
     getArguments();
+    ui->operatorLabel->setText("*");
     if(!isSuccess)
     {
         return;
